@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100%; background-image: url('lalala.jpg'); }
+		</style>
+
+	</head>
+
+	<body>
+		<form name="form1" method="post" action="">
+		<input name="ok" type="button" id="ok" value="Texture with normal" onclick="config()">
+		<input name="ok2" type="button" id="ok2" value="Near" onclick="Change_Near()">
+		
+		</form>
+		<form name="form2" method="post" action="">
+		<input name="ok3" type="test" id="ok3" value="x_value=">
+		<input name="ok4" type="test" id="ok4" value="y_value=">
+		</form>
+		<script src="js/three.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/MTLLoader.js"></script>
+		<script src="js/DragControls.js"></script>
+		<script src="js/PLYLoader.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/stats.min.js"></script>
+		<script>
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			function Change_Near()
+            {
+            	Near = !Near;
+            	if(Near)
+            	{
+            		camera.position.z = -400;
+            		camera.position.y = +150;
+					document.form1.ok2.value="Near";
+            	}
+            	else
+            	{
+            		camera.position.z = 1025;
+            		document.form1.ok2.value="Far";
+            	}
+            }
+			var container, stats;
+			container = document.createElement( 'div' );
+			document.body.appendChild( container );
+			stats = new Stats();
+			container.appendChild( stats.dom );
+			var targetRotation = 0;
+    		var targetUp = 0;
+    		var targetRotationOnMouseDown = 0;
+    		var mouseXOnMouseDown = 0;
+    		var mouseYOnMouseDown = 0;
+    		var targetUpOnMouseDown = 0;
+			var directionalLight;
+			var has_the_rotation=false;
+			var Near=true;
+			var x_position = 0;
+			var y_position = 0;
+			var z_position = 0;
+			 function change() {
+    			var value = document.getElementById("range").value;
+    			console.log(value);
+  				}
+			function onDocumentMouseMove( event ) {
+				
+				windowHalfX = window.innerWidth / 2;
+        		windowHalfY = window.innerHeight / 2;
+				mouseX = event.clientX - windowHalfX;
+        		mouseY = event.clientY - windowHalfY;
+        		document.form2.ok3.value="x_value="+mouseX;
+        		document.form2.ok4.value="y_value="+mouseY;
+				if(has_the_rotation)
+				{
+					targetRotation = ( mouseX - mouseXOnMouseDown ) * 0.001;
+        			targetUp = (mouseY - mouseYOnMouseDown)*0.001;
+        			mouseXOnMouseDown = mouseX;
+        			mouseYOnMouseDown = mouseY;
+        			camera.rotation.x += targetUp;
+        			camera.rotation.y += targetRotation;
+				}
+				else
+				{
+					directionalLight.position.x = mouseX;
+					directionalLight.position.y = mouseY;
+				}
+				
+
+				//console.log("Light: ", targetRotation);
+				//console.log("Light: ", targetUp);
+			}
+			function onDocumentMouseDown( event ) {
+        		event.preventDefault();
+        		click();
+        		//has_the_rotation = !has_the_rotation;
+				console.log("Light: ", 4);
+    		}
+			function onDocumentKeyDown( event ) {
+				var keyCode = event.which;
+				if (keyCode == 87){
+					//obj.position.x=obj.position.x+1;
+					//obj.rotation.y += 0.1;
+					Change_Near();
+					//camera.position.z+=20;
+					//obj.translateZ(1);
+					//z_position=z_position+1;
+					//console.log("z_position: ", z_position);
+				}
+				else if ( keyCode == 83) {
+				camera.position.z-=20;
+					//obj.translateZ(-1);
+					//z_position=z_position-1;
+					//console.log("z_position: ", z_position);
+				}
+				else if (keyCode == 37){
+					x_position=x_position-1;
+					obj.translateX(-1);
+					console.log("x_position: ", x_position);
+				}
+				else if (keyCode == 38){
+					y_position=y_position+1;
+					obj.translateY(1);
+					console.log("y_position: ", y_position);
+				}
+				else if (keyCode == 39){
+					x_position=x_position+1;
+					obj.translateX(1);
+					console.log("x_position: ", x_position);
+				}
+				else if (keyCode == 40){
+					y_position=y_position-1;
+					obj.translateY(-1);
+					console.log("y_position: ", y_position);
+				}
+			}
+			function onMouseWheel(event){
+        		event.preventDefault();
+        		console.log("Light: ", 4);
+        		if(event.wheelDelta > 0){ //前滚
+         			//obj.position.z+=0.02;
+        		}
+        		else
+        		{
+            		//obj.position.z-=0.02;
+        		}
+    		}
+
+			var obj;
+			var obj2;
+			var control_count=0;
+			var scene = new THREE.Scene();
+			//set the camera's far plane large enough to avoid disappear
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 5000 );
+
+			renderer = new THREE.WebGLRenderer({ antialias: false,alpha:true });
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(0x000000, 0);
+			document.body.appendChild( renderer.domElement );
+			
+			camera.position.z = 5;
+
+			
+			//controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+			var ambient = new THREE.AmbientLight( 0x101030 );
+      		scene.add( ambient );
+      		
+      		var my_x = 0;
+      		var my_y = 0;
+      		var my_z = 100;
+  			directionalLight = new THREE.DirectionalLight( 0xffeedd );
+  			directionalLight.position.set( my_x, my_y, my_z );
+  			scene.add( directionalLight );
+    		
+    		var light = new THREE.HemisphereLight( 0xbbbbbb, 0x080820, 1 );
+			scene.add( light )
+
+    		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+			document.addEventListener( 'keydown' , onDocumentKeyDown, false);
+			document.addEventListener( 'mousewheel', onMouseWheel, false);
+
+            var textureLoader = new THREE.TextureLoader();
+	    	
+	    	var my_material = new THREE.MeshPhongMaterial( {
+					color: 0xdddddd,
+					specular: 0x222222,
+					shininess: 35,
+					map: textureLoader.load( "merge3dEdit.jpeg" ),
+					normalMap: textureLoader.load( "merge3d_NRM_adjust.png" ),
+					normalScale: new THREE.Vector2( 0.8, 0.8 )
+				} );
+
+
+
+	    	var my_material_without_texture = new THREE.MeshPhongMaterial( {
+					color: 0xdddddd,
+					specular: 0x222222,
+					shininess: 35,
+				} );
+
+	    	var my_material_without_normal = new THREE.MeshPhongMaterial( {
+					color: 0xdddddd,
+					specular: 0x222222,
+					shininess: 35,
+					map: textureLoader.load( "merge3dEdit.jpeg" ),
+				} );
+	    	var my_material_has_texture_without_normal = new THREE.MeshPhongMaterial( {
+					color: 0xdddddd,
+					specular: 0x222222,
+					shininess: 35,
+					normalMap: textureLoader.load( "merge3d_NRM_adjust.png" ),
+					normalScale: new THREE.Vector2( 0.8, 0.8 )
+				} );
+	    	var good_material = new THREE.MeshPhongMaterial( {
+					color: 0xdddddd,
+					specular: 0x222222,
+					shininess: 35,
+					map: textureLoader.load( "merge3dEdit.jpeg" ),
+					bumpMap: textureLoader.load( "CrazyBumpmerge3d_NRM.png" ),
+					normalMap: textureLoader.load( "merge3d_NRM_adjust.png" ),
+					normalScale: new THREE.Vector2( 1, 1 )
+				} );
+
+		    var loader = new THREE.MTLLoader();
+		    var objloader = new THREE.OBJLoader();
+	            loader.load("merge3d.obj.mtl", function (mtl) {
+			//objloader.setMaterials(mtl);
+	                mtl.preload();
+	                
+	            })
+	        objloader.load('merge3d.obj', function (object) {
+	        		obj = object;
+		            object.position.x=0;
+		            object.rotation.y=0;
+		            object.position.z=-800;
+		            object.translateX(-43);
+		            object.translateY(163);
+		            obj.translateZ(50);
+		            object.scale.set(10,10,10)
+				    //try to align
+					/*var vector = new THREE.Vector3(
+		    				5,//x
+		    				5,//y
+		    				15 //z
+						);
+
+					//create a point to lookAt
+					var focalPoint = new THREE.Vector3(
+					    obj.position.x + vector.x,
+					    obj.position.y + vector.y,
+					    obj.position.z + vector.z
+					);
+
+			//all that remains is setting the up vector (if needed) and use lookAt
+			obj.up = new THREE.Vector3(0,0,1);//Z axis up
+			obj.lookAt(focalPoint); */
+				obj.children[0].material = my_material;
+	                    scene.add(object);
+	                });
+			
+			
+			//ply loader
+			var loader = new THREE.PLYLoader();
+				loader.load( 'Mesh.ply', function ( geometry ) {
+
+					geometry.computeVertexNormals();
+
+					//var material = new THREE.MeshStandardMaterial( { flatShading: true } );
+					//add color
+					var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x111111, shininess: 200, vertexColors: THREE.VertexColors} );
+					var mesh = new THREE.Mesh( geometry, material );
+
+					mesh.position.x =   0;
+					mesh.position.y =   0;
+					mesh.position.z =   250;
+					//directionalLight.position.x = mouseX;
+					//directionalLight.position.z = 250;
+					//mesh.rotation.x = - Math.PI / 2;
+					//mesh.scale.multiplyScalar( 0.001 );
+
+					//mesh.castShadow = true;
+					//mesh.receiveShadow = true;
+					console.log(mesh.normal);
+					scene.add( mesh );
+
+				} );
+
+			var animate = function () {
+					requestAnimationFrame( animate );
+					renderer.render(scene, camera);
+					stats.update();
+				};
+
+			animate();
+			function config()
+            {
+            	if(control_count%4==0)
+            	{
+            		document.form1.ok.value="No texture and no normal";
+					obj.children[0].material = my_material_without_texture;
+            	}
+            	else if(control_count%4==1)
+            	{
+            		document.form1.ok.value="texture and no normal";
+            		obj.children[0].material = my_material_without_normal;
+            	}
+            	else if(control_count%4==2)
+            	{
+            		document.form1.ok.value="No texture but has normal";
+            		obj.children[0].material = my_material_has_texture_without_normal;
+            	}
+            	else
+            	{
+            		document.form1.ok.value="Texture with normal";
+            		obj.children[0].material = my_material;
+            	}
+            	control_count++;
+		        renderer.render(scene, camera);
+            }
+            function click()
+            {
+            	has_the_rotation = !has_the_rotation;
+            	if(has_the_rotation)
+            	{
+					//document.form1.ok2.value="Orientation";
+            	}
+            	else
+            	{
+            		//document.form1.ok2.value="Light";
+            	}
+            }
+            
+            
+			
+		</script>
+	
+	</body>
+</html>
